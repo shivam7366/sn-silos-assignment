@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import { UseSelector, useDispatch } from "react-redux";
+import { addProduct, editProduct } from "../../states/actions";
 const Catogery = [
   "electronics",
   "jewelery",
@@ -9,6 +11,7 @@ const Catogery = [
 
 function Form({ cancelButtonRef, setOpen, details, edit }) {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [productName, setProductName] = useState(details ? details.title : "");
   const [price, setPrice] = useState(details ? details.price : "");
   const [description, setDescription] = useState(
@@ -17,43 +20,6 @@ function Form({ cancelButtonRef, setOpen, details, edit }) {
   const [catogery, setCatogery] = useState(details ? details.catogery : "");
   const [image, setImage] = useState(details ? details.image : "");
   console.log(details);
-
-  const editProduct = async (productData) => {
-    try {
-      const response = await fetch(
-        `https://fakestoreapi.com/products/${productData.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(productData),
-        }
-      );
-      const data = await response.json();
-      alert("Product Updated Successfully  ");
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const addProduct = async (productData) => {
-    try {
-      const response = await fetch(`https://fakestoreapi.com/products`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(productData),
-      });
-      const data = await response.json();
-      alert("Product Added Successfully");
-      router.push("/");
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -73,10 +39,10 @@ function Form({ cancelButtonRef, setOpen, details, edit }) {
       image: image,
     };
     if (edit) {
-      productData.id = details.id;
-      editProduct(productData);
+      const id = details.id;
+      dispatch(editProduct(id, productData));
     } else {
-      addProduct(productData);
+      dispatch(addProduct(productData));
     }
 
     console.log(productData);

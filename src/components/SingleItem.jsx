@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 function SingleItem({ product, handleEdit, handleDelete }) {
   return (
@@ -12,17 +13,23 @@ function SingleItem({ product, handleEdit, handleDelete }) {
           >
             Edit
           </button>
-          <button
+          {/* <button
             className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
             onClick={handleDelete}
           >
             Delete
-          </button>
+          </button> */}
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <img src={product.image} alt={product.title} className="w-full" />
+          <Image
+            src={product.image}
+            alt={product.title}
+            width={500}
+            height={500}
+            className="w-full"
+          />
         </div>
         <div>
           <p className="text-gray-600 mb-4">Category: {product.category}</p>

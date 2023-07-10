@@ -2,47 +2,35 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import SingleItem from "../../src/components/SingleItem";
 import Modal from "../../src/components/ui/Modal";
+import { useSelector, useDispatch } from "react-redux";
+import { getOneProduct, deleteProduct } from "../../src/states/actions";
 
 const ProductDetailPage = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const { id } = router.query;
   const [open, setOpen] = useState(false);
 
-  const [product, setProduct] = useState({});
+  // const [product, setProduct] = useState({});
 
   useEffect(() => {
     if (id) {
-      fetchProduct();
+      dispatch(getOneProduct(id));
     }
   }, [id]);
 
-  const fetchProduct = async () => {
-    try {
-      const response = await fetch(`https://fakestoreapi.com/products/${id}`);
-      const productData = await response.json();
-      setProduct(productData);
-    } catch (error) {
-      console.error("Error fetching product:", error);
-    }
-  };
+  const product = useSelector((state) => state.product);
+  const isLoading = useSelector((state) => state.isLoading);
+  const error = useSelector((state) => state.error);
 
   const handleEdit = () => {
     // Handle edit functionality for the product
     setOpen(true);
   };
 
-  const handleDelete = async () => {
-    // Handle delete functionality for the product
-    try {
-      const response = await fetch(`https://fakestoreapi.com/products/${id}`, {
-        method: "DELETE",
-      });
-      const data = await response.json();
-      console.log(data);
-      router.push("/");
-    } catch (error) {
-      console.log(error);
-    }
+  const handleDelete = (productId) => {
+    dispatch(deleteProduct(productId));
+    router.push("/");
   };
 
   if (!product.title) {

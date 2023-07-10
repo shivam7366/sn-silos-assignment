@@ -1,30 +1,21 @@
 import { useState, useEffect } from "react";
 import Modal from "../src/components/ui/Modal";
-import Alert from "../src/components/ui/Alert";
-import Link from "next/link";
-import Image from "next/image";
+import List from "../src/components/List";
+import { useSelector, useDispatch } from "react-redux";
+import { getAllProducts, deleteProduct } from "../src/states/actions";
 
 const ProductsPage = () => {
+  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [details, setDetails] = useState({});
-  const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [edit, setEdit] = useState(false);
 
   useEffect(() => {
-    fetch("https://fakestoreapi.com/products")
-      .then((response) => response.json())
-      .then((data) => {
-        setProducts(data);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        setError("Error fetching products");
-
-        setIsLoading(false);
-      });
+    dispatch(getAllProducts());
   }, []);
+  const products = useSelector((state) => state.products);
+  const isLoading = useSelector((state) => state.isLoading);
+  const error = useSelector((state) => state.error);
 
   if (isLoading) {
     return <div className="container mx-auto text-center">Loading...</div>;
@@ -43,23 +34,8 @@ const ProductsPage = () => {
     setOpen(true);
   };
 
-  const handleDelete = async (productId) => {
-    // Handle delete functionality for the product and update the UI
-    try {
-      const response = await fetch(
-        `https://fakestoreapi.com/products/${productId}`,
-        {
-          method: "DELETE",
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      setProducts(products.filter((product) => product.id !== productId));
-
-      console.log("Delete product:", productId);
-    } catch (error) {
-      console.log(error);
-    }
+  const handleDelete = (productId) => {
+    dispatch(deleteProduct(productId));
   };
 
   return (
@@ -67,34 +43,14 @@ const ProductsPage = () => {
       <Modal setOpen={setOpen} open={open} details={details} edit={edit} />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">Product List</h1>
-        <ul className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <ul>
           {products.map((product) => (
-            <li
+            <List
               key={product.id}
-              className="bg-white shadow-lg rounded-lg overflow-hidden flex flex-col"
-            >
-              <div className="relative pb-2/3">
-                <Image
-                  src={product.image}
-                  alt={product.title}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              </div>
-              <div className="p-4 flex-grow">
-                <h2 className="text-xl font-bold mb-2">
-                  <Link href={`products/${product.id}`}>{product.title}</Link>
-                </h2>
-                <p className="text-gray-600">${product.price}</p>
-                <div className="mt-4 flex justify-end">
-                  <button
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
-                    onClick={() => handleDelete(product.id)}
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </li>
+              product={product}
+              handleEdit={handleEdit}
+              handleDelete={handleDelete}
+            />
           ))}
         </ul>
       </div>
