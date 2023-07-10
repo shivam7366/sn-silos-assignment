@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Modal from "../src/components/ui/Modal";
 import Alert from "../src/components/ui/Alert";
 import Link from "next/link";
+import Image from "next/image";
 
 const ProductsPage = () => {
   const [open, setOpen] = useState(false);
@@ -73,7 +74,7 @@ const ProductsPage = () => {
               className="bg-white shadow-lg rounded-lg overflow-hidden flex flex-col"
             >
               <div className="relative pb-2/3">
-                <img
+                <Image
                   src={product.image}
                   alt={product.title}
                   className="absolute inset-0 w-full h-full object-cover"

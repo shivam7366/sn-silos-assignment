@@ -190,7 +190,7 @@ function Form({ cancelButtonRef, setOpen, details, edit }) {
               >
                 <option>Choose Catogery</option>
                 {Catogery.map((catogery) => (
-                  <option>{catogery}</option>
+                  <option key={catogery}>{catogery}</option>
                 ))}
               </select>
               <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
